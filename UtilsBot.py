@@ -1,6 +1,7 @@
 import os
 import discord
 import asyncio
+import aiohttp
 
 from dotenv import load_dotenv
 from discord.ext import commands
@@ -8,11 +9,13 @@ from discord.ext import commands
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-# intents = discord.Intents(messages=True, members=True, guilds=True)
+intents = discord.Intents(messages=True, members=True, guilds=True)
 bot = commands.Bot(command_prefix='$') # add intents with intents=intents
 
 
 MATH_SYMBOLS = ['+', '-', '*', '/', '^', '&', '|', '(', ')', '%']
+
+IMAGE_CATEGS = ['dog', 'cat', 'panda', 'fox', 'red_panda', 'koala', 'birb', 'racoon', 'kangaroo', 'whale', 'pikachu']
 
 @bot.event
 async def on_ready():
@@ -147,7 +150,21 @@ async def math(ctx, *args):
         await ctx.send("Error: Mismatched Parantheses")
 
 @bot.command()
-async def resize(ctx, img):
-    print(img)
+async def image(ctx, arg):
+    # IMAGE_CATEGS = ['dog', 'cat', 'panda', 'fox', 'red_panda', 'koala', 'birb', 'racoon', 'kangaroo', 'whale', 'pikachu']
+    if str(arg) in IMAGE_CATEGS:
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get("https://some-random-api.ml/img/" + str(arg)) as r:
+                data = await r.json()
+                embed = discord.Embed(
+                    title=str(arg),
+                    color = ctx.author.color
+                )
+                embed.set_image(url=data['link'])
+                await ctx.send(embed=embed)
+    elif str(arg) == 'penis' or str(arg) == 'vagina': # This was a problem in my server
+        member = ctx.message.author
+        guild = ctx.message.guild
+        await guild.kick(member, reason="You asked for a picture of genitals in a discord server. What did you expect to happen?")
     
 bot.run(TOKEN)
