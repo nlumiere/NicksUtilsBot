@@ -69,8 +69,13 @@ async def image(ctx, arg):
                 await ctx.send(embed=embed)
 
 
-def make_me_festive(user):
-    pass
+async def make_me_festive(member):
+    if member.display_name.lower().startswith('festive'):
+        await member.edit(nick=member.display_name[7:])
+    elif member.display_name.lower().startswith('festive '):
+        await member.edit(nick=member.display_name[8:])
+    else:
+        await member.edit(nick="Festive " + member.display_name)
 
 
 async def festive_swap(ctx, roles):
@@ -92,7 +97,7 @@ async def festive(ctx, arg=""):
     global festive_lockout
     roles = ['FestiveGreen', 'FestiveRed']
     if str(arg).lower() == 'me':
-        make_me_festive('user')
+        await make_me_festive(ctx.message.author)
         return
     elif str(arg).lower() == 'white':
         roles.append('FestiveWhite')
