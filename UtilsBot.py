@@ -108,7 +108,7 @@ async def festive(ctx, arg=""):
     roles = ['FestiveGreen', 'FestiveRed']
     if str(arg).lower() == 'me':
         if not await make_me_festive(ctx.message.author):
-            await ctx.send("Cannot change role of administrator. Change it yourself.")
+            await ctx.send("Cannot change nickname of administrator. Change it yourself.")
         return
     elif str(arg).lower() == 'remove':
         await festive_remove(ctx)
