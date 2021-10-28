@@ -70,12 +70,22 @@ async def image(ctx, arg):
 
 
 async def make_me_festive(member):
+    if member.guild_permissions.administrator:
+        return False
     if member.display_name.lower().startswith('festive'):
         await member.edit(nick=member.display_name[7:])
     elif member.display_name.lower().startswith('festive '):
         await member.edit(nick=member.display_name[8:])
     else:
         await member.edit(nick="Festive " + member.display_name)
+    return True
+
+
+async def festive_remove(ctx):
+    for member in ctx.guild.members:
+        for role in member.roles:
+            if role.name.lower().startswith('festive'):
+                await member.remove_roles(role)
 
 
 async def festive_swap(ctx, roles):
@@ -97,7 +107,11 @@ async def festive(ctx, arg=""):
     global festive_lockout
     roles = ['FestiveGreen', 'FestiveRed']
     if str(arg).lower() == 'me':
-        await make_me_festive(ctx.message.author)
+        if not await make_me_festive(ctx.message.author):
+            await ctx.send("Cannot change role of administrator. Change it yourself.")
+        return
+    elif str(arg).lower() == 'remove':
+        await festive_remove(ctx)
         return
     elif str(arg).lower() == 'white':
         roles.append('FestiveWhite')
