@@ -4,3 +4,4 @@ Lib/
 Scripts/
 tcl/
 __pycache__/
+test.py
